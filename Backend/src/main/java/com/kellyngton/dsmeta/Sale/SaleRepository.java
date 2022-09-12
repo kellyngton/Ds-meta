@@ -10,5 +10,4 @@ import java.time.LocalDate;
 public interface SaleRepository extends JpaRepository<SaleModel,Long> {
     @Query("SELECT obj FROM SaleModel obj WHERE obj.date BETWEEN :min AND :max ORDER BY obj.amount DESC")
     Page<SaleModel> findSales(LocalDate min, LocalDate max, Pageable pageable);
-
 }

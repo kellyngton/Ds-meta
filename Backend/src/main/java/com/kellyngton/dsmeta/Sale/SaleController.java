@@ -1,29 +1,30 @@
 package com.kellyngton.dsmeta.Sale;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/sales")
-@RequiredArgsConstructor
 public class SaleController {
-    private final SaleService saleService;
-    private final SaleSmsService smsService;
+
+    @Autowired
+    private SaleService service;
+
+    @Autowired
+    private SaleSmsService smsService;
 
     @GetMapping
     public Page<SaleModel> findSales(
-            @RequestParam(value = "minDate", defaultValue = "") String minDate,
-            @RequestParam(value = "minDate", defaultValue = "") String maxDate,
-            Pageable pageable){
-        return saleService.findSales(minDate, maxDate, pageable);
+            @RequestParam(value="minDate", defaultValue = "") String minDate,
+            @RequestParam(value="maxDate", defaultValue = "") String maxDate,
+            Pageable pageable) {
+        return service.findSales(minDate, maxDate, pageable);
     }
 
     @GetMapping("/{id}/notification")
-    public void nofifySms(@PathVariable Long id){
+    public void notifySms(@PathVariable Long id) {
         smsService.sendSms(id);
     }
 }

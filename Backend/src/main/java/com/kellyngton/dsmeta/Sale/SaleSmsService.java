@@ -1,15 +1,16 @@
 package com.kellyngton.dsmeta.Sale;
 
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+
 @Service
-@RequiredArgsConstructor
 public class SaleSmsService {
+
     @Value("${twilio.sid}")
     private String twilioSid;
 
@@ -22,12 +23,18 @@ public class SaleSmsService {
     @Value("${twilio.phone.to}")
     private String twilioPhoneTo;
 
-    private final SaleRepository repository;
+    @Autowired
+    private SaleRepository saleRepository;
+
     public void sendSms(Long saleId) {
-        SaleModel sale = repository.findById(saleId).get();
-        String msg= "Vendedor " + sale.getSellerName() + " foi destaque em " +
-                sale.getDate().getMonthValue() + "/" + sale.getDate().getYear() +
-                " com um total de R$ " + String.format("%.2f",sale.getAmount());
+
+        SaleModel sale = saleRepository.findById(saleId).get();
+
+        String date = sale.getDate().getMonthValue() + "/" + sale.getDate().getYear();
+
+        String msg = "O vendedor " + sale.getSellerName() + " foi destaque em " + date
+                + " com um total de R$ " + String.format("%.2f", sale.getAmount());
+
         Twilio.init(twilioSid, twilioKey);
 
         PhoneNumber to = new PhoneNumber(twilioPhoneTo);
